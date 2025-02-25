@@ -5,8 +5,10 @@ import WelcomeScreen from './WelcomeScreen';
 import SignupScreen from './SignupScreen';
 import LoginScreen from './LoginScreen';
 import HomeScreen from '../HomeScreen';
+import LiquorDashboard from '../LiqourDashboard';
 import UserProfile from './UserProfile';
 import VerifyScreen from './VerifyScreen'; 
+import RegisterLiqorStore from './RegisterLiqorStoreScreen';
 import ProductPage from '../ProductPage';
 import BottomNav from '../../components/BottomNav';
 import UserCart from '../UserCart';
@@ -24,7 +26,9 @@ const AuthNavigation = () => {
         <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Signup" component={SignupScreen} options={{headerShown:false}}/>
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="RegisterLiqorScreen" component={RegisterLiqorStore} options={{headerShown:false}}/>
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown:false}}/>
+        <Stack.Screen name="LiqourDashboard" component={LiquorDashboard} options={{headerShown:false}}/>
         <Stack.Screen name="Verify" component={VerifyScreen} options={{ headerShown: false }} /> 
         <Stack.Screen name="user-profile" component={UserProfile} options={{headerShown:false}}/>
         <Stack.Screen name="ProductPage" component={ProductPage}  options={{headerShown:false}}/>

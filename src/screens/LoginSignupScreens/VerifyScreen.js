@@ -9,6 +9,7 @@ const VerifyScreen = ({ navigation }) => {
   const [codeFocus, setCodeFocus] = useState(false);
   const [customError, setCustomError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  
 
   const handleVerify = async () => {
     if (code.length !== 6) {
@@ -29,7 +30,12 @@ const VerifyScreen = ({ navigation }) => {
       if (response.ok) {
         setSuccessMsg('Email verified successfully!');
         setTimeout(() => {
-          navigation.navigate('Home'); // Redirect to HomeScreen
+          // Redirect based on user type
+          if (data.user_type === 'customer') {
+            navigation.navigate('Home'); // Redirect to HomeScreen for customers
+          } else if (data.user_type === 'owner') {
+            navigation.navigate('RegisterLiqorStore'); // Redirect to RegisterLiqorStore for owners
+          }
         }, 2000); // Redirect after 2 seconds
       } else {
         throw new Error(data.error || 'Verification failed.');
@@ -38,6 +44,7 @@ const VerifyScreen = ({ navigation }) => {
       setCustomError(error.message);
     }
   };
+ 
 
   return (
     <View style={styles.container}>
@@ -55,7 +62,7 @@ const VerifyScreen = ({ navigation }) => {
               placeholder="Enter 6-digit code"
               placeholderTextColor={'grey'}
               keyboardType="numeric"
-              maxLength={6}
+              maxLength={7}
               onFocus={() => {
                 setCodeFocus(true);
                 setCustomError('');
