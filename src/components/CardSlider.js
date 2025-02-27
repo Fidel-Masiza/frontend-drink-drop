@@ -25,14 +25,14 @@ const openProductPage = (item) => {
             }}>
               <View style={styles.card}>
               <View style={styles.s1}>
-                <Image  source={{uri:item.foodimageurl}} style={styles.cardimgin}/>
+              <Image source={item.foodimage} style={styles.cardimgin} />
 
             </View>
 
             <View style={styles.s2}>
                 <Text style={styles.txt1}>{item.foodname}</Text>
                 <View style={styles.s2in}>
-                    <Text style={styles.txt2}>Rs.{item.foodprice}/-</Text>
+                    <Text style={styles.txt2}>Ksh.{item.foodprice}/-</Text>
                     {/*  */}
                     {item.foodtype === 'veg' ? <Text style=
                     {vegetarian}></Text> : <Text style={nonvegetarian}>

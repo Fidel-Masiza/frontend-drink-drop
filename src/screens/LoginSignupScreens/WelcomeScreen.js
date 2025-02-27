@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import * as Location from 'expo-location';
 import deliveryboylogo from '../../../assets/liqor-page2.png';
 import { colors, hr80 } from '../../globals/style';
@@ -38,16 +38,15 @@ const WelcomeScreen = ({ navigation }) => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
 
-      // Reverse geocoding to get address
+      // Reverse geocoding to get address using Nominatim
       const { latitude, longitude } = location.coords;
-      const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your Google Maps API key
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`;
 
       try {
         const response = await fetch(url);
         const data = await response.json();
-        if (data.results[0]) {
-          setAddress(data.results[0].formatted_address);
+        if (data.display_name) {
+          setAddress(data.display_name);
         } else {
           setAddress('Address not found');
         }
@@ -78,7 +77,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Drink-Drop</Text>
+      <Text style={styles.title}>Drink-Drop</Text>
       <View style={styles.logoout}>
         <Image source={deliveryboylogo} style={styles.logo} />
       </View>
@@ -128,7 +127,8 @@ const styles = StyleSheet.create({
     color: colors.col1,
     textAlign: 'center',
     marginVertical: 10,
-    fontWeight: '200',
+    fontWeight: '800',
+    fontFamily: 'franklin-gothic-urw',
   },
   logoout: {
     width: '75%',

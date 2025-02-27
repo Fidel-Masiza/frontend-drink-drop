@@ -18,7 +18,7 @@ const BottomNav = ({navigation}) => {
       </View>
 
       <View style={styles.btncont1}>
-         <AntDesign name="shoppingcart" size={30} style={styles.icon1} onPress={()=>{navigation.navigate('Cart')}}/>
+         <AntDesign name="shoppingcart" size={30} style={styles.icon1} onPress={()=>{navigation.navigate('CartPage')}}/>
       </View>
 
       <View style={styles.btncont1}>

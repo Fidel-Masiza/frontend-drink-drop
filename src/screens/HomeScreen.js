@@ -1,60 +1,153 @@
-import { StyleSheet, Text, View, TextInput, StatusBar, ScrollView, FlatList } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, StatusBar, ScrollView, FlatList, Image } from 'react-native';
+import React, { useState } from 'react';
 import HomeHeadNav from '../components/HomeHeadNav';
 import Categories from '../components/Categories';
 import OfferSlider from '../components/OfferSlider';
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../globals/style';
-import { firebase } from '../../FireBase/FirebaseConfig';
 import CardSlider from '../components/CardSlider';
-import ProductPage from './ProductPage';
 import BottomNav from '../components/BottomNav';
+import deliveryboylogo from '../../assets/liqor-page2.png';
 
-export default function HomeScreen({navigation}) {
-  const [foodData, setfoodData] = useState([]);
-  const foodRef = firebase.firestore().collection('FooodData');
-  const [vegetarian, setVegetarianData] = useState([]);
-  const [nonvegetarian, setNonVegetarianData]= useState([]);
-  
-  // Fetch food data from Firestore
-  useEffect(() => {
-    foodRef.onSnapshot(snapshot => {
-      setfoodData(snapshot.docs.map(doc => doc.data()));
-    });
-  }, []);
 
-  // Filter food data based on types
-  useEffect(() => {
-    setVegetarianData(foodData.filter(item => item.foodtype === 'veg'));
-    setNonVegetarianData(foodData.filter(item=>item.foodtype === 'non-veg'));
-  }, [foodData]);
 
-  const [search,setSearch] = useState('');
+export default function HomeScreen({ navigation }) {
+  const [search, setSearch] = useState('');
+
+  // Static data
+  const staticFoodData = [
+    {
+      id: 1,
+      foodname: "Chrome-Gin",
+      foodprice: "200",
+      foodtype: "gin",
+      foodimage: require('../../assets/chrome-gin.jpeg'), // Local image
+      fooddescription: "Smooth and easy to drink ",
+      restaurantname: "Kwa Msoo",
+      restaurantaddressbuilding: "123 Main St",
+      restaurantaddressstreet: "Runda",
+      restaurantaddresscity: "Nairobi",
+      addon: "Water",
+      addonprice: "2",
+    },
+    {
+      id: 2,
+      foodname: "Gilbeys",
+      foodprice: "1200",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/gilbo.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Easy Drinking with friends",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Kiambu",
+      addon: "Bacon",
+      addonprice: "3",
+    },
+    {
+      id: 3,
+      foodname: "KC-whiskey",
+      foodprice: "1000",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/kc-whiskey.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Middle-class alcohol",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Kericho",
+      addon: "soda",
+      addonprice: "3",
+    },
+   
+    {
+      id: 4,
+      foodname: "Konyagi",
+      foodprice: "1000",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/konyagi.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Middle-class alcohol",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Webuye",
+      addon: "soda",
+      addonprice: "3",
+    },
+    {
+      id: 5,
+      foodname: "County-brandy",
+      foodprice: "600",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/county-brandy.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Comrades oeee!",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Nairobi CBD",
+      addon: "Nothing",
+      addonprice: "3",
+    },
+    {
+      id: 6,
+      foodname: "Black and White",
+      foodprice: "1600",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/black&white.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Quality drink!",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Nairobi CBD",
+      addon: "Nothing",
+      addonprice: "3",
+    },
+    {
+      id: 7,
+      foodname: "Red-label",
+      foodprice: "1600",
+      foodtype: "non-veg",
+      foodimage: require('../../assets/red-label.jpeg'), // Local image
+      foodimageurl: deliveryboylogo,
+      fooddescription: "Quality drink!",
+      restaurantname: "Burger King",
+      restaurantaddressbuilding: "456 Elm St",
+      restaurantaddressstreet: "Uptown",
+      restaurantaddresscity: "Nairobi CBD",
+      addon: "Nothing",
+      addonprice: "3",
+    },
+  ];
+
 
   return (
     <View style={styles.container}>
       <StatusBar />
-      <HomeHeadNav navigation={navigation}/>
-      
-      {/* Sticky search bar */}
+      <HomeHeadNav navigation={navigation} />
+
+      {/* Search bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchbox}>
           <AntDesign name="search1" size={24} color="black" style={styles.searchicon} />
-          <TextInput placeholder=' Search' style={styles.input} onChangeText={(text)=>{setSearch(text)}}/>
+          <TextInput placeholder=' Search' style={styles.input} onChangeText={(text) => { setSearch(text) }} />
         </View>
       </View>
-      
+
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         {search !== '' && (
           <View style={styles.searchresultouter}>
             <FlatList
               style={styles.searchresultsinner}
-              data={foodData}
-              renderItem={({item}) => {
-                if(item.foodname.toLowerCase().includes(search.toLowerCase())){
-                  return(
+              data={staticFoodData}
+              renderItem={({ item }) => {
+                if (item.foodname.toLowerCase().includes(search.toLowerCase())) {
+                  return (
                     <View style={styles.searchresult}>
-                      <AntDesign  name="arrowright" size={24} color="black" />
+                      <AntDesign name="arrowright" size={24} color="black" />
                       <Text style={styles.searchresulttext}>{item.foodname}</Text>
                     </View>
                   );
@@ -63,18 +156,19 @@ export default function HomeScreen({navigation}) {
             />
           </View>
         )}
-        
+
         <Categories />
         <OfferSlider />
         {/* Display food data */}
-        <CardSlider title={"Today's Special"} data={foodData} navigation={navigation}/>
-        <CardSlider title={"Carnivore's Choice"} data={nonvegetarian} navigation={navigation}/>
-        <CardSlider title={"Herbivore's Haven"} data={vegetarian} navigation={navigation}/>
+        <CardSlider title={"Near You"} data={staticFoodData} navigation={navigation} />
+        <CardSlider title={"Today's Special"} data={staticFoodData} navigation={navigation} />
+        <CardSlider title={"Most Popular"} data={staticFoodData} navigation={navigation} />
+
       </ScrollView>
-      
+
       {/* Bottom Navigation */}
       <View style={styles.bottomnav}>
-        <BottomNav navigation={navigation}/>
+        <BottomNav navigation={navigation} />
       </View>
     </View>
   );
@@ -86,7 +180,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.col1,
     zIndex: 10,
-    paddingVertical: 10, // Ensure padding for better spacing
+    paddingVertical: 10,
   },
   searchicon: {
     color: colors.text1,
@@ -100,29 +194,28 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 20,
     elevation: 10,
-    borderColor: 'red', // Applied red border color
-    borderWidth: 1, // Added border width for visibility
+    borderColor: 'red',
+    borderWidth: 1,
   },
   input: {
     marginLeft: 10,
     flex: 1,
     fontSize: 18,
-   
   },
   container: {
     flex: 1,
     backgroundColor: colors.col1,
     width: "100%",
   },
-  searchresultouter:{
+  searchresultouter: {
     width: "100%",
     backgroundColor: colors.col1,
     paddingHorizontal: 30,
   },
-  searchresultsinner:{
+  searchresultsinner: {
     width: "100%",
   },
-  searchresult:{
+  searchresult: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
@@ -130,16 +223,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
   },
-  searchresulttext:{
+  searchresulttext: {
     marginLeft: 10,
     fontSize: 18,
     color: colors.text1,
   },
-  bottomnav:{
+  bottomnav: {
     position: "absolute",
     bottom: 0,
     width: "100%",
     backgroundColor: colors.col1,
     zIndex: 20,
-  }
+  },
 });

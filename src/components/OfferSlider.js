@@ -1,108 +1,103 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react';
-import Swiper from 'react-native-swiper';
-import { colors } from '../globals/style';
+import React, { useState, useRef } from 'react';
+import { View, Text, FlatList, Image, StyleSheet, Dimensions, Animated } from 'react-native';
 
-
-
-{/*  const carouseldata = [
-    {
-      id: 1,
-      image: require('../../assets/biryani.png'),
-    },
-
-    {
-      id: 2,
-      image: require('../../assets/burger.png'),
-    },
-
-    {
-      id: 3,
-      image: require('../../assets/chicken.png'),
-    },
-
-    {
-      id: 4,
-      image: require('../../assets/fries.png'),
-    },
-
-    {
-      id: 5,
-      image: require('../../assets/noodles.png'),
-    },
-  ]
-*/}
-
+const { width } = Dimensions.get('window');
 
 const OfferSlider = () => {
-  return (
-    <View>
-      <View style={styles.OfferSlider}>
-        <Swiper autoplay={true} autoplayTimeout={5} showsButtons={true} 
-        dotColor={colors.text2} activeDotColor={colors.text1}
-        nextButton={<Text style={styles.btnText}>{'>'}</Text>}
-        prevButton={<Text style={styles.btnText}>{'<'}</Text>}>
-              <View style={styles.slide}>
-                <Image source={require('../../assets/biryanii.png')} style={styles.image} />
-              </View>
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollX = useRef(new Animated.Value(0)).current;
 
-              <View style={styles.slide}>
-                <Image source={require('../../assets/burger.png')} style={styles.image} />
-              </View>
+  // Static images for the slider
+  const images = [
+    require('../../assets/pexels-marceloverfe-22234051.jpg'),
+    require('../../assets/pexels-jpgata-11430603.jpg'),
+    require('../../assets/pexels-fotograf-jylland-1557004-2995283.jpg'),
+    require('../../assets/istockphoto-2058359281-1024x1024.jpg'),
+  ];
 
-              <View style={styles.slide}>
-                <Image source={require('../../assets/chickie.png')} style={styles.image} />
-              </View>
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    { useNativeDriver: false }
+  );
 
-              <View style={styles.slide}>
-                <Image source={require('../../assets/pizza.png')} style={styles.image} />
-              </View>
+  const handleViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  }).current;
 
-              <View style={styles.slide}>
-                <Image source={require('../../assets/chowmein.jpg')} style={styles.image} />
-              </View>
-
-
-        </Swiper>
-      </View>
+  const renderItem = ({ item }) => (
+    <View style={styles.slide}>
+      <Image source={item} style={styles.image} />
     </View>
-  )
-}
+  );
 
-export default OfferSlider
+  const renderPagination = () => {
+    return (
+      <View style={styles.pagination}>
+        {images.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              index === currentIndex ? styles.paginationDotActive : null,
+            ]}
+          />
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={images}
+        renderItem={renderItem}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        onViewableItemsChanged={handleViewableItemsChanged}
+        keyExtractor={(_, index) => index.toString()}
+      />
+      {renderPagination()}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  image:{
-    width:"100%",
-    height:"100%",
-    resizeMode:"cover"
+  container: {
+    marginTop: 20,
+    marginBottom: 20,
   },
-  OfferSlider:{
-    width:"100%",
-    height:200,
-    backgroundColor:colors.col1,
-    paddingHorizontal:10,
-    justifyContent:"center",
-    alignItems:"center",
-    marginVertical:10,
-    borderRadius:20
+  slide: {
+    width: width * 0.9,
+    marginHorizontal: width * 0.05,
+    borderRadius: 15,
+    overflow: 'hidden',
   },
-  slide:{
-    width:"100%",
-    height:200,
-    backgroundColor:colors.text3,
-    justifyContent:"center",
-    alignItems:"center"
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 15,
+  resizeMode: 'cover',
   },
-  btnText:{
-    color:colors.text1,
-    fontSize:25,
-    fontWeight:"bold",
-    backgroundColor:"white",
-    borderRadius:20,
-    width:30,
-    height:30,
-    textAlign:"center",
-    lineHeight:30
-  }
-})
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ccc',
+    marginHorizontal: 5,
+  },
+  paginationDotActive: {
+    backgroundColor: '#000',
+  },
+});
+
+export default OfferSlider;

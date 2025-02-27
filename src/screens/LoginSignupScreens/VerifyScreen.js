@@ -9,7 +9,7 @@ const VerifyScreen = ({ navigation }) => {
   const [codeFocus, setCodeFocus] = useState(false);
   const [customError, setCustomError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  
+
 
   const handleVerify = async () => {
     if (code.length !== 6) {
@@ -37,7 +37,7 @@ const VerifyScreen = ({ navigation }) => {
             navigation.navigate('RegisterLiqorStore'); // Redirect to RegisterLiqorStore for owners
           }
         }, 2000); // Redirect after 2 seconds
-      } else {
+      } else { 
         throw new Error(data.error || 'Verification failed.');
       }
     } catch (error) {

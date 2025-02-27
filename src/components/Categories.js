@@ -15,49 +15,49 @@ const Categories = () => {
         <TouchableOpacity>
         <View style={styles.box}>
           <MaterialIcons name="breakfast-dining" size={24} color={colors.primary} style={styles.icon}/>
-          <Text style={styles.text}>Breakfast</Text>
+          <Text style={styles.text}>Whiskey</Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <MaterialCommunityIcons name="food-drumstick" size={24} color={colors.primary} style={styles.icon}/>
-          <Text style={styles.text}>Starters</Text>
+          <Text style={styles.text}>Gin</Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <MaterialCommunityIcons name="noodles" size={24} color={colors.primary} style={styles.icon}/>
-          <Text style={styles.text}>Dinner</Text>
+          <Text style={styles.text}>Beer</Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <Ionicons name="fast-food" size={24} color={colors.primary} style={styles.icon} />
-          <Text style={styles.text}>American</Text>
+          <Text style={styles.text}>Tequila</Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <FontAwesome6 name="bowl-rice" size={24} color={colors.primary} style={styles.icon}/>
-          <Text style={styles.text}>Pakistani</Text>
+          <Text style={styles.text}>Rum </Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <MaterialCommunityIcons name="bottle-soda" size={24} color="black" />
-          <Text style={styles.text}>Soda</Text>
+          <Text style={styles.text}>Vodka</Text>
         </View>
         </TouchableOpacity>
 
         <TouchableOpacity>
         <View style={styles.box}>
           <MaterialCommunityIcons name="cupcake" size={24} color={colors.primary} style={styles.icon} />
-          <Text style={styles.text}>Desserts</Text>
+          <Text style={styles.text}>Absinthe</Text>
         </View>
         </TouchableOpacity>
 

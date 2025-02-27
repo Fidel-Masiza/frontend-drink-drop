@@ -13,6 +13,7 @@ import ProductPage from '../ProductPage';
 import BottomNav from '../../components/BottomNav';
 import UserCart from '../UserCart';
 import PlaceOrder from '../PlaceOrder';
+import CartPage from '../CartPage';
 import TrackOrder from '../TrackOrder';
 
 
@@ -34,6 +35,7 @@ const AuthNavigation = () => {
         <Stack.Screen name="ProductPage" component={ProductPage}  options={{headerShown:false}}/>
         <Stack.Screen name="bottomnav" component={BottomNav}  options={{headerShown:false}}/>
         <Stack.Screen name="Cart" component={UserCart}   options={{headerShown:false}}/>
+        <Stack.Screen name='CartPage' component={CartPage}  options={{headerShown:false}}/>
         <Stack.Screen name='Placeorder' component={PlaceOrder}  options={{headerShown:false}}/>
         <Stack.Screen name="trackorder" component={TrackOrder}   options={{headerShown:false}}/>
       </Stack.Navigator>
