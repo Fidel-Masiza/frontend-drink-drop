@@ -1,128 +1,167 @@
-import React, { useContext } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { CartContext } from './CartContext';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { colors } from '../globals/style';
 
-const CartPage = ({ navigation }) => {
-  const { cart, removeFromCart } = useContext(CartContext);
+const CartPage = ({ route, navigation }) => {
+  const { cart: initialCart, storeId } = route.params;
+  const [cart, setCart] = useState(initialCart);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Get user_type from Home screen navigation params
+  const user_type = navigation.getState().routes.find(
+    route => route.name === 'Home'
+  )?.params?.user_type; 
 
-  const totalAmount = cart.reduce((total, item) => total + item.foodprice * item.quantity, 0);
+  const username = navigation.getState().routes.find(
+    route => route.name === 'Home'
+  )?.params?.username;
+
+
+
+  const handleQuantityChange = (item, quantityChange) => {
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+    if (existingItem) {
+      const newQuantity = existingItem.quantity + quantityChange;
+      if (newQuantity <= 0) {
+        setCart((prevCart) => prevCart.filter((cartItem) => cartItem.id !== item.id));
+      } else {
+        setCart((prevCart) =>
+          prevCart.map((cartItem) =>
+            cartItem.id === item.id ? { ...cartItem, quantity: newQuantity } : cartItem
+          )
+        );
+      }
+    }
+  };
+
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price_usd * item.quantity, 0).toFixed(2);
+  };
+
+  const handleCheckout = async () => {
+    if (user_type !== 'customer') {
+      Alert.alert('Error', 'Only customers can place orders');
+      return;
+    }
+
+    if (cart.length === 0) {
+      Alert.alert('Error', 'Your cart is empty');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const orderData = {
+        user_type: user_type,
+        store_id: storeId,
+        username: username,
+        total_amount: calculateTotal(),
+        items: cart.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price_usd
+        }))
+      };
+
+      const response = await fetch('http://127.0.0.1:8000/drinks/orders/create/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+     // In CartPage.js, modify the success handler:
+         // In CartPage.js, modify the success handler:
+if (response.ok) {
+  Alert.alert('Success', 'Order placed successfully');
+  setCart([]);
+  navigation.navigate('MyOrders', { username: username }); // Modified this line
+} else 
+     {
+        throw new Error(data.error || 'Failed to place order');
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Your Cart</Text>
-
-      {cart.length === 0 ? (
-        <Text style={styles.emptyCartText}>Your cart is empty.</Text>
-      ) : (
-        cart.map((item) => (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {cart.map((item) => (
           <View key={item.id} style={styles.cartItem}>
-            <Image source={item.foodimage} style={styles.cartItemImage} />
-            <View style={styles.cartItemDetails}>
-              <Text style={styles.cartItemName}>{item.foodname}</Text>
-              <Text style={styles.cartItemPrice}>Ksh.{item.foodprice * item.quantity}/-</Text>
-              <Text style={styles.cartItemQuantity}>Qty: {item.quantity}</Text>
+            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemPrice}>${item.price_usd}</Text>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity onPress={() => handleQuantityChange(item, -1)}>
+                <Text style={styles.quantityButton}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.quantity}>{item.quantity}</Text>
+              <TouchableOpacity onPress={() => handleQuantityChange(item, 1)}>
+                <Text style={styles.quantityButton}>+</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity 
-              style={styles.removeButton} 
-              onPress={() => removeFromCart(item.id)}
-            >
-              <Ionicons name="remove-circle" size={24} color="#ff4757" />
-            </TouchableOpacity>
           </View>
-        ))
-      )}
+        ))}
+      </ScrollView>
 
-      {cart.length > 0 && (
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalText}>Total: Ksh.{totalAmount}/-</Text>
-          <TouchableOpacity style={styles.checkoutButton}>
-            <Text style={styles.checkoutButtonText}>Proceed to Pay</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </ScrollView>
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalText}>Total: ${calculateTotal()}</Text>
+      </View>
+
+      <TouchableOpacity 
+        style={[styles.checkoutButton, isSubmitting && styles.disabledButton]} 
+        onPress={handleCheckout}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.checkoutButtonText}>
+          {isSubmitting ? 'Processing...' : 'Checkout'}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-  },
-  emptyCartText: {
-    fontSize: 18,
-    color: '#777',
-    textAlign: 'center',
-  },
+  container: { flex: 1, backgroundColor: colors.col1 },
+  scrollContainer: { paddingBottom: 20 },
   cartItem: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
-    backgroundColor: '#fff',
     padding: 10,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.text2,
   },
-  cartItemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginRight: 10,
+  itemName: { fontSize: 16, color: colors.text3 },
+  itemPrice: { fontSize: 16, color: colors.text1 },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  cartItemDetails: {
-    flex: 1,
-  },
-  cartItemName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  cartItemPrice: {
-    fontSize: 14,
-    color: '#555',
-  },
-  cartItemQuantity: {
-    fontSize: 14,
-    color: '#777',
-  },
-  removeButton: {
-    padding: 10,
-  },
+  quantityButton: { fontSize: 20, color: colors.text1, marginHorizontal: 10 },
+  quantity: { fontSize: 16, color: colors.text1 },
   totalContainer: {
-    marginTop: 20,
-    paddingTop: 10,
+    padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: colors.text2,
   },
-  totalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
+  totalText: { fontSize: 18, fontWeight: 'bold', color: colors.text1 },
   checkoutButton: {
-    backgroundColor: '#ff4757',
+    backgroundColor: colors.col2,
     padding: 15,
-    borderRadius: 25,
     alignItems: 'center',
   },
-  checkoutButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+  disabledButton: {
+    backgroundColor: colors.text2,
   },
+  checkoutButtonText: { color: colors.text1, fontSize: 18 },
 });
 
 export default CartPage;

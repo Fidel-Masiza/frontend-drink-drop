@@ -51,7 +51,8 @@ const SignupScreen = ({ navigation }) => {
       if (response.ok) {
         setSuccessMsg('Registration successful. Please verify your email.');
         setTimeout(() => {
-          navigation.navigate('Verify'); // Redirect to VerifyScreen
+          // Pass user_type to VerifyScreen
+          navigation.navigate('Verify', { userType,email });
         }, 2000); // Redirect after 2 seconds
       } else {
         throw new Error(data.message || 'Failed to register');

@@ -3,27 +3,11 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import * as Location from 'expo-location';
 import deliveryboylogo from '../../../assets/liqor-page2.png';
 import { colors, hr80 } from '../../globals/style';
-import { firebase } from '../../../FireBase/FirebaseConfig';
 
 const WelcomeScreen = ({ navigation }) => {
-  const [userlogged, setUserlogged] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [address, setAddress] = useState('Fetching address...');
-
-  useEffect(() => {
-    const checklogin = () => {
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          setUserlogged(user);
-        } else {
-          setUserlogged(null);
-          console.log('no user logged in');
-        }
-      });
-    };
-    checklogin();
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -57,17 +41,6 @@ const WelcomeScreen = ({ navigation }) => {
     })();
   }, []);
 
-  const handleLogout = () => {
-    firebase.auth().signOut()
-      .then(() => {
-        setUserlogged(null);
-        console.log('logged out');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   let locationText = 'Waiting for location...';
   if (errorMsg) {
     locationText = errorMsg;
@@ -88,28 +61,14 @@ const WelcomeScreen = ({ navigation }) => {
       <Text style={styles.locationText}>Location: {locationText}</Text>
       <Text style={styles.addressText}>Address: {address}</Text>
 
-      {userlogged == null ? 
-        <View style={styles.btnout}>
-          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.btn}>Sign Up</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.btn}>Log In</Text>
-          </TouchableOpacity>
-        </View>
-       : 
-        <View style={styles.logged}>
-          <Text style={styles.txtlog}>Signed in as <Text style={styles.txtlogin}>{userlogged.email}</Text></Text>
-          <View style={styles.btnout}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-              <Text style={styles.btn}>Go to Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleLogout()}>
-              <Text style={styles.btn}>Log Out</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      }
+      <View style={styles.btnout}>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.btn}>Sign Up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.btn}>Log In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -159,18 +118,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     paddingHorizontal: 20,
-  },
-  logged: {
-    alignItems: 'center',
-  },
-  txtlog: {
-    fontSize: 16,
-    color: colors.col1,
-  },
-  txtlogin: {
-    fontWeight: '700',
-    textDecorationLine: 'underline',
-    textDecorationStyle: 'solid',
   },
   locationText: {
     fontSize: 16,

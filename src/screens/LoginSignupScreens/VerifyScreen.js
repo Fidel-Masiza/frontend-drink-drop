@@ -4,12 +4,14 @@ import { colors, hr80, titles, btn1 } from '../../globals/style';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 
-const VerifyScreen = ({ navigation }) => {
+const VerifyScreen = ({ navigation, route }) => {
   const [code, setCode] = useState('');
   const [codeFocus, setCodeFocus] = useState(false);
   const [customError, setCustomError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  // Get user_type from route params
+  const { userType,email } = route.params;
 
   const handleVerify = async () => {
     if (code.length !== 6) {
@@ -30,21 +32,20 @@ const VerifyScreen = ({ navigation }) => {
       if (response.ok) {
         setSuccessMsg('Email verified successfully!');
         setTimeout(() => {
-          // Redirect based on user type
-          if (data.user_type === 'customer') {
+          // Redirect based on user type and pass user_type to HomegScreen
+          if (userType === 'customer') {
             navigation.navigate('Home'); // Redirect to HomeScreen for customers
-          } else if (data.user_type === 'owner') {
-            navigation.navigate('RegisterLiqorStore'); // Redirect to RegisterLiqorStore for owners
+          } else if (userType === 'owner') {
+            navigation.navigate('Homeg', { userType , email}); // Pass user_type to HomegScreen
           }
         }, 2000); // Redirect after 2 seconds
-      } else { 
+      } else {
         throw new Error(data.error || 'Verification failed.');
       }
     } catch (error) {
       setCustomError(error.message);
     }
   };
- 
 
   return (
     <View style={styles.container}>
